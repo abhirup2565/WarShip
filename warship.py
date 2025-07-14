@@ -42,8 +42,9 @@ class Warship:
             self.ship.moving_left=False
 
     def _fire_bullet(self):
-        new_bullet=Bullet(self)
-        self.bullets.add(new_bullet)  
+        if len(self.bullets)<self.Setting.bullet_allowed:
+            new_bullet=Bullet(self)
+            self.bullets.add(new_bullet)  
 
     def _check_events(self):
         """response to event"""
@@ -56,7 +57,11 @@ class Warship:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event) 
         
-        
+    def _update_bullets(self):
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+                if bullet.rect.bottom<=0:
+                    self.bullets.remove(bullet)   
 
     def _update_screen(self):
         self.screen.fill(self.bg_color)
@@ -73,7 +78,7 @@ class Warship:
             """Start main loop for the game """
             self._check_events()
             self.ship.update()
-            self.bullets.update()
+            self._update_bullets()
             self._update_screen()
             self.clock.tick(60)
 
