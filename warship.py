@@ -3,6 +3,7 @@ import pygame
 
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 class Warship:
     """overall class to manage game assests and behavior"""
@@ -19,24 +20,32 @@ class Warship:
         self.Setting.screen_height=self.screen.get_rect().height
         pygame.display.set_caption("Warship")
         self.ship=Ship(self)
+        self.bullets=pygame.sprite.Group()
                     
     def _check_keydown_events(self,event):
         """respond to keypress"""
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right=True
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left=True
         elif event.key == pygame.K_q:
             sys.exit()
              
-    
+
     def _check_keyup_events(self,event):
          """Response to key release"""
          if event.key == pygame.K_RIGHT:
             self.ship.moving_right=False
          elif event.key == pygame.K_LEFT:
             self.ship.moving_left=False
-         
+
+    def _fire_bullet(self):
+        if len(self.bullets)<self.Setting.bullet_allowed:
+            new_bullet=Bullet(self)
+            self.bullets.add(new_bullet)  
+
     def _check_events(self):
         """response to event"""
         #watch for keyboard and mouse movement
@@ -48,21 +57,31 @@ class Warship:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event) 
         
-        
+    def _update_bullets(self):
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+                if bullet.rect.bottom<=0:
+                    self.bullets.remove(bullet)   
 
     def _update_screen(self):
         self.screen.fill(self.bg_color)
+        #recent draw of bullet
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+
         self.ship.blitme()
         #make recently drawn screen visible
         pygame.display.flip()
 
     def run_game(self):
-        """Start main loop for the game """
         while True:
+            """Start main loop for the game """
             self._check_events()
             self.ship.update()
+            self._update_bullets()
             self._update_screen()
             self.clock.tick(60)
+
 
 
 if __name__=="__main__":
