@@ -3,6 +3,7 @@ import pygame
 
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 class Warship:
     """overall class to manage game assests and behavior"""
@@ -19,6 +20,7 @@ class Warship:
         self.Setting.screen_height=self.screen.get_rect().height
         pygame.display.set_caption("Warship")
         self.ship=Ship(self)
+        self.bullets=pygame.sprite.Group()
                     
     def _check_keydown_events(self,event):
         """respond to keypress"""
@@ -37,6 +39,9 @@ class Warship:
          elif event.key == pygame.K_LEFT:
             self.ship.moving_left=False
          
+
+        
+
     def _check_events(self):
         """response to event"""
         #watch for keyboard and mouse movement
@@ -58,11 +63,11 @@ class Warship:
 
     def run_game(self):
         """Start main loop for the game """
-        while True:
-            self._check_events()
-            self.ship.update()
-            self._update_screen()
-            self.clock.tick(60)
+        self._check_events()
+        self.bullets.update()
+        self._update_screen()
+        self.clock.tick(60)
+
 
 
 if __name__=="__main__":
