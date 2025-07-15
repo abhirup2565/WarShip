@@ -4,6 +4,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 class Warship:
     """overall class to manage game assests and behavior"""
@@ -21,6 +22,39 @@ class Warship:
         pygame.display.set_caption("Warship")
         self.ship=Ship(self)
         self.bullets=pygame.sprite.Group()
+        self.aliens=pygame.sprite.Group()
+        self._create_fleet()
+
+    def _create_fleet(self):
+        alien=Alien(self)
+        alien_width,alien_height=alien.rect.size
+
+        current_x,current_y=alien_width,alien_height
+        while current_y<(self.Setting.screen_height-3*alien_height):
+            while current_x<(self.Setting.screen_width-2*alien_width):
+                self._create_alien(current_x,current_y)
+                current_x+=2*alien_width
+            current_x=alien_width
+            current_y+=2*alien_height
+
+    def _create_alien(self,x_positon,y_position):
+        new_alien = Alien(self)
+        new_alien.x=x_positon
+        new_alien.rect.x=x_positon
+        new_alien.rect.y=y_position
+        self.aliens.add(new_alien)
+
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y+=self.Setting.fleet_drop_speed
+        self.Setting.fleet_direction *=-1
+
                     
     def _check_keydown_events(self,event):
         """respond to keypress"""
@@ -70,8 +104,14 @@ class Warship:
             bullet.draw_bullet()
 
         self.ship.blitme()
+        self.aliens.draw(self.screen)
         #make recently drawn screen visible
         pygame.display.flip()
+
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
+        
 
     def run_game(self):
         while True:
@@ -79,6 +119,7 @@ class Warship:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
