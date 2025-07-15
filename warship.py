@@ -14,10 +14,11 @@ class Warship:
     def __init__(self):
         """initialize the game and create resource"""
         pygame.init()
+        #alien invasion in active state
+        self.game_active=True
         self.Setting=Settings()
         self.bg_color=self.Setting.bg_color
         self.clock=pygame.time.Clock()
-
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.Setting.screen_width=self.screen.get_rect().width
         self.Setting.screen_height=self.screen.get_rect().height
@@ -123,25 +124,36 @@ class Warship:
         self.aliens.update()
         if pygame.sprite.spritecollideany(self.ship,self.aliens):
             self._ship_hit()
+        self._check_alien_bottom()
         
     def _ship_hit(self):
-        self.stats.ship_left-=1
-        #deleting any bullets or aliens
-        self.bullets.empty()
-        self.aliens.empty()
-        #create new fleet and center the ship
-        self._create_fleet()
-        self.ship.center_ship()
-        #pause
-        sleep(0.5)
+        if self.stats.ship_left>0:
+            self.stats.ship_left-=1
+            #deleting any bullets or aliens
+            self.bullets.empty()
+            self.aliens.empty()
+            #create new fleet and center the ship
+            self._create_fleet()
+            self.ship.center_ship()
+            #pause
+            sleep(0.5)
+        else:
+            self.game_active=False
+
+    def _check_alien_bottom(self):
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom>=self.Setting.screen_height:
+                self._ship_hit()
+                break
 
     def run_game(self):
         while True:
             """Start main loop for the game """
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
