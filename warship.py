@@ -44,6 +44,17 @@ class Warship:
         new_alien.rect.y=y_position
         self.aliens.add(new_alien)
 
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y+=self.Setting.fleet_drop_speed
+        self.Setting.fleet_direction *=-1
+
                     
     def _check_keydown_events(self,event):
         """respond to keypress"""
@@ -97,12 +108,18 @@ class Warship:
         #make recently drawn screen visible
         pygame.display.flip()
 
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
+        
+
     def run_game(self):
         while True:
             """Start main loop for the game """
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
