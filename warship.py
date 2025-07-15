@@ -1,10 +1,12 @@
 import sys
 import pygame
+from time import sleep
 
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from game_stats import GameStats
 
 class Warship:
     """overall class to manage game assests and behavior"""
@@ -20,6 +22,7 @@ class Warship:
         self.Setting.screen_width=self.screen.get_rect().width
         self.Setting.screen_height=self.screen.get_rect().height
         pygame.display.set_caption("Warship")
+        self.stats=GameStats(self)
         self.ship=Ship(self)
         self.bullets=pygame.sprite.Group()
         self.aliens=pygame.sprite.Group()
@@ -118,7 +121,19 @@ class Warship:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
+        if pygame.sprite.spritecollideany(self.ship,self.aliens):
+            self._ship_hit()
         
+    def _ship_hit(self):
+        self.stats.ship_left-=1
+        #deleting any bullets or aliens
+        self.bullets.empty()
+        self.aliens.empty()
+        #create new fleet and center the ship
+        self._create_fleet()
+        self.ship.center_ship()
+        #pause
+        sleep(0.5)
 
     def run_game(self):
         while True:
