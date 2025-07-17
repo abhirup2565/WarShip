@@ -103,6 +103,7 @@ class Warship:
     def _check_play_button(self,mouse_pos):
             button_clicked=self.play_button.rect.collidepoint(mouse_pos)
             if button_clicked and not self.game_active:
+                self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
                 self.game_active=True
                 self.bullets.empty()
@@ -124,6 +125,7 @@ class Warship:
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.Setting.increase_speed()
 
     def _update_screen(self):
         self.screen.fill(self.bg_color)
