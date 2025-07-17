@@ -101,8 +101,16 @@ class Warship:
                 self._check_play_button(mouse_pos)
 
     def _check_play_button(self,mouse_pos):
-        if self.play_button.rect.collidepoint(mouse_pos):
-            self.game_active=True
+            button_clicked=self.play_button.rect.collidepoint(mouse_pos)
+            if button_clicked and not self.game_active:
+                self.stats.reset_stats()
+                self.game_active=True
+                self.bullets.empty()
+                self.aliens.empty()
+                self._create_fleet()
+                self.ship.center_ship()
+                #hide mouse cursor
+                pygame.mouse.set_visible(False)
         
     def _update_bullets(self):
         self.bullets.update()
