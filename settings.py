@@ -16,6 +16,8 @@ class Settings:
         #dynamic settings
         self.speedup_scale=1.1
         self.initialize_dynamic_settings()
+        #Scoring settings
+        self.alien_points=50
         
     def initialize_dynamic_settings(self):
         #Initialse dynamic settings

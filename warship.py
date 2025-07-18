@@ -125,6 +125,9 @@ class Warship:
 
     def _check_bullet_alien_collision(self):  
         collisions=pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
+        if collisions:
+            self.stats.score+=self.Setting.alien_points
+            self.sb.prep_score()
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
