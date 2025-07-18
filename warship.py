@@ -109,6 +109,7 @@ class Warship:
                 self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
                 self.sb.prep_score()
+                self.sb.check_high_score()
                 self.game_active=True
                 self.bullets.empty()
                 self.aliens.empty()
