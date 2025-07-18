@@ -1,12 +1,14 @@
 import sys
 import pygame
 from time import sleep
+
 from button import Button
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
+from scoreboard import Scoreboard
 
 class Warship:
     """overall class to manage game assests and behavior"""
@@ -24,6 +26,7 @@ class Warship:
         self.Setting.screen_height=self.screen.get_rect().height
         pygame.display.set_caption("Warship")
         self.stats=GameStats(self)
+        self.sb = Scoreboard(self)
         self.ship=Ship(self)
         self.bullets=pygame.sprite.Group()
         self.aliens=pygame.sprite.Group()
@@ -105,6 +108,7 @@ class Warship:
             if button_clicked and not self.game_active:
                 self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
+                self.sb.prep_score()
                 self.game_active=True
                 self.bullets.empty()
                 self.aliens.empty()
@@ -122,6 +126,10 @@ class Warship:
 
     def _check_bullet_alien_collision(self):  
         collisions=pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score+=self.Setting.alien_points*len(aliens)
+            self.sb.prep_score()
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
@@ -134,6 +142,7 @@ class Warship:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+        self.sb.show_score()
         if not self.game_active:
             self.play_button.draw_button()
         #make recently drawn screen visible
