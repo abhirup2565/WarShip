@@ -108,6 +108,7 @@ class Warship:
             if button_clicked and not self.game_active:
                 self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
+                self.sb.prep_score()
                 self.game_active=True
                 self.bullets.empty()
                 self.aliens.empty()
@@ -126,7 +127,8 @@ class Warship:
     def _check_bullet_alien_collision(self):  
         collisions=pygame.sprite.groupcollide(self.bullets,self.aliens,True,True)
         if collisions:
-            self.stats.score+=self.Setting.alien_points
+            for aliens in collisions.values():
+                self.stats.score+=self.Setting.alien_points*len(aliens)
             self.sb.prep_score()
         if not self.aliens:
             self.bullets.empty()
