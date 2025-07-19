@@ -109,6 +109,8 @@ class Warship:
                 self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
                 self.sb.prep_score()
+                self.sb.prep_level()
+                self.sb.prep_ship()
                 self.sb.check_high_score()
                 self.game_active=True
                 self.bullets.empty()
@@ -130,11 +132,13 @@ class Warship:
         if collisions:
             for aliens in collisions.values():
                 self.stats.score+=self.Setting.alien_points*len(aliens)
-            self.sb.prep_score()
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
             self.Setting.increase_speed()
+            self.stats.level+=1
+            self.sb.prep_level()
+            self.sb.prep_score()
 
     def _update_screen(self):
         self.screen.fill(self.bg_color)
@@ -159,6 +163,7 @@ class Warship:
     def _ship_hit(self):
         if self.stats.ship_left>0:
             self.stats.ship_left-=1
+            self.sb.prep_ship()
             #deleting any bullets or aliens
             self.bullets.empty()
             self.aliens.empty()
