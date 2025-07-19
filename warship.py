@@ -109,6 +109,7 @@ class Warship:
                 self.Setting.initialize_dynamic_settings()
                 self.stats.reset_stats()
                 self.sb.prep_score()
+                self.sb.prep_level()
                 self.sb.check_high_score()
                 self.game_active=True
                 self.bullets.empty()
@@ -130,6 +131,7 @@ class Warship:
         if collisions:
             for aliens in collisions.values():
                 self.stats.score+=self.Setting.alien_points*len(aliens)
+            self.stats.level+=1
             self.sb.prep_score()
         if not self.aliens:
             self.bullets.empty()
